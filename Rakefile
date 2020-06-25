@@ -130,3 +130,12 @@ task 'stackprof', [:json] do |_task, args|
     end
   end
 end
+
+desc 'Try dummy game'
+task 'dummy' do
+  require_relative 'lib/engine'
+  require_relative 'lib/engine/step'
+  require_relative 'lib/engine/step/dummy_game'
+  a = Engine::Step::DummyGame.new
+  a.dummy_run
+end
