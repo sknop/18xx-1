@@ -143,7 +143,7 @@ module Engine
       corporation.owner = president
       @log << "#{president.name} becomes the president of #{corporation.name}"
 
-      # skip the president's share swap if the iniator is already the president
+      # skip the president's share swap if the initiator is already the president
       # or there was no previous president. this is because there is no one to swap with
       return if owner == president || !previous_president
 
@@ -164,6 +164,8 @@ module Engine
 
     def move_share(share, to_entity)
       corporation = share.corporation
+      # somehow this removes the share from the bundle when selling for
+      # bankruptcy, but not when selling in stock round
       share.owner.shares_by_corporation[corporation].delete(share)
       to_entity.shares_by_corporation[corporation] << share
       share.owner = to_entity

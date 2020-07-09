@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1846'
+require_relative '../g_1846/bank'
 require_relative 'base'
 
 module Engine
@@ -29,6 +30,7 @@ module Engine
       SELL_AFTER = :p_any_operate
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block_pres
+      EBUY_OTHER_VALUE = false
       HOME_TOKEN_TIMING = :float
       MUST_BUY_TRAIN = :always
 
@@ -260,6 +262,13 @@ module Engine
         else
           @minors.delete(corporation)
         end
+      end
+
+      def init_bank
+        cash = self.class::BANK_CASH
+        cash = cash[players.size] if cash.is_a?(Hash)
+
+        Engine::G1846::Bank.new(cash, log: @log)
       end
 
       def init_round
