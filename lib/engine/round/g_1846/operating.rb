@@ -104,6 +104,7 @@ module Engine
 
         def skip_track
           return true if no_president?
+
           free = false
 
           @current_entity.abilities(:tile_lay) do |ability|
@@ -117,12 +118,12 @@ module Engine
 
         def skip_issue
           return true if no_president?
+
           issuable_shares.empty? && redeemable_shares.empty?
         end
 
         def skip_dividend
           if no_president?
-            revenue = @current_routes.sum(&:revenue)
             process_dividend(Action::Dividend.new(
               @current_entity,
               kind: 'withhold',
@@ -161,13 +162,12 @@ module Engine
 
         def skip_token_or_track
           return true if no_president?
+
           skip_track && skip_token
         end
 
         def can_buy_train?
-          if no_president? && @current_entity.trains.any?
-            return false
-          end
+          return false if no_president? && @current_entity.trains.any?
 
           super
         end
@@ -214,9 +214,7 @@ module Engine
 
             sell_shares(bundle)
 
-            if corporation.owner == player
-              corporation.owner = @bank
-            end
+            corporation.owner = @bank if corporation.owner == player
           end
 
           @log << "#{@game.format_currency(player.cash)} is transferred from "\
@@ -226,12 +224,12 @@ module Engine
           @game.bankruptcies += 1
           @bankrupt = true
 
-          if no_president?
-            buy_train_no_president
-            # TODO: test this next_step! deal works correctly when bank-owned
-            # corp does not buy a train
-            next_step!
-          end
+          return unless no_president?
+
+          buy_train_no_president
+          # TODO: test this next_step! deal works correctly when bank-owned
+          # corp does not buy a train
+          next_step!
         end
 
         def no_president?
@@ -246,14 +244,14 @@ module Engine
           name, variant = train.variants.min_by { |_, v| v[:price] }
           price = variant[:price]
 
-          if @current_entity.cash >= price
-            process_buy_train(Action::BuyTrain.new(
-              @current_entity,
-              train: train,
-              price: price,
-              variant: name,
-            ))
-          end
+          return if @current_entity.cash < price
+
+          process_buy_train(Action::BuyTrain.new(
+            @current_entity,
+            train: train,
+            price: price,
+            variant: name,
+          ))
         end
 
         def process_lay_tile(action)

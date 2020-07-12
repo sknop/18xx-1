@@ -261,7 +261,7 @@ module View
           end
         end
 
-        if @corporation.num_market_shares > 0
+        if @corporation.num_market_shares.positive?
           president = !@corporation.shares.find(&:president)&.owner&.player?
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
 
