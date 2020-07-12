@@ -279,6 +279,10 @@ module Engine
         Round::G1846::Operating.new(@minors + @corporations, game: self, round_num: round_num)
       end
 
+      def stock_round
+        Round::G1846::Stock.new(@players, game: self)
+      end
+
       def event_close_companies!
         super
 
